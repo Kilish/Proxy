@@ -1,0 +1,59 @@
+package testforjava;
+
+import java.io.*;
+import java.lang.reflect.Proxy;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
+import java.util.zip.*;
+
+
+//C:\Users\zhakypbekov_30855\Desktop\test1//Записи2.txt
+interface IPerson {
+	public String getName();
+	public void setName(String name);
+	public void rename(String new_name);
+}
+  /**
+   *  Класс Person реализует интерфейс  IPerson
+   */
+
+class Person implements IPerson {
+	private String name ;
+	public  String getName()            {	return name;	}
+	public  void   setName(String name) {	this.name = name;	}
+
+	public void rename(String new_name) {
+		if (!new_name.equals(name))		this.name = new_name;
+	}
+}
+class NeverSleepingEye implements java.lang.reflect.InvocationHandler {
+	private Object obj;
+ 
+	public NeverSleepingEye(Object f1){ obj = f1; }
+ 
+	public Object invoke(Object proxy, java.lang.reflect.Method method, Object[] args)  
+		throws Throwable {
+		System.out.println("NeverSleepingEye invoke : " + method.getName());
+		return method.invoke(obj, args) ;
+	}
+}
+class Task {
+
+	public static void main(String[] args) throws IOException {
+		Person person = new Person();
+		 
+		IPerson personproxy = (Person) Proxy.newProxyInstance(Person.class.getClassLoader(), 
+								   							   Person.class.getInterfaces(),
+								   							   new NeverSleepingEye(person));
+	 
+		personproxy.setName("Гриша");
+		String h  = personproxy.getName() ;
+		personproxy.rename("Вася");
+    }
+}
+
